@@ -1,9 +1,7 @@
 # RAG-basic-AI
 (TF-IDF/BM25) RAG Basic implementation
 
-
 This repo showcases a basic Retrieval-Augmented Generation RAG system
-
 
 ### Getting started 
 
@@ -11,18 +9,21 @@ This repo showcases a basic Retrieval-Augmented Generation RAG system
 
 Poetry is a dependency management tool for Python. To install it, run the following command:
 
-- linux and MacOs:
+- **Linux and macOS**:
 
     curl -sSL https://install.python-poetry.org | python3 -
 
     or 
 
-    pip3 install poetry | pip install poetry
+    pip3 install poetry  (or pip install poetry)
 
-
-- run : poetry install
-- poetry shell  | eval $(poetry env activate)
-
+- Then run: 
+  poetry install
+  
+- To enter the virtual environment:
+  poetry shell  
+  (or)  
+  eval $(poetry env activate)
 
 #### Running commands 
 
@@ -36,32 +37,79 @@ Poetry is a dependency management tool for Python. To install it, run the follow
 
 (poetry docs)[https://python-poetry.org/docs/]
 
-
-
 ## Data preparation 
 
-
-
-Put all files (pdf) on raw folder and run
+Put all files (pdf) in the `data/raw` folder and run:
 
 - poetry run python3 src/data_preparation.py
 
+Explanation: 
+- This script extracts PDF text, cleans duplicated characters, and chunks the data if needed.
 
-explanation; 
-data preparation,  caracteres duplicados , limpiar info 
+### Clean data: 
+If you want to use OpenAI, export the API key:
+- export OPENAI_API_KEY=<YOUR API KEY>
 
-clan data , if you are going to use open ai export de api key
-- EXPORT OPENAI_API_KEY=<YOUR API KEY>
+Alternatively, download Ollama to run everything locally:
+- https://ollama.com/download
 
-download ollama to run locally 
-https://ollama.com/download 
+Then run the data prep script in local mode:
 
+- poetry run python3 src/data_preparation.py --local
 
-run script
+(If you have issues with the default model in `config.py`, you may switch to another model by editing `OPENAI_MODEL`.)
 
-- poetry run python3 src/clean_data_text.py 
-- to run using ollama locally:  poetry run python3 src/clean_data_text.py  --local 
+## Running queries
 
-- to run with openai, set de API_KEY 
-- also you have to check if you have access to de desire model (default gpt-4o) otherwise use other model on config.py  
+We provide two separate scripts for retrieval: `bm25_query.py` and `tfidf_query.py`. Both are located in `src/queries/`, and can be run with Poetry as follows:
 
+Example usage for BM25:
+
+basic: `poetry run python3 src/queries/bm25_query.py -query "Que es HistoriaCard"`
+
+```bash
+poetry run python3 src/queries/bm25_query.py \
+  --query "¿Qué es HistoriaCard?" \
+  --data_dir "data/processed_chunks/anexo" \
+  --top_k 5
+```
+
+Example usage for TF-IDF:
+
+basic:  `poetry run python3 src/queries/tfidf_query.py --query "Que es HistoriaCard"`
+```bash
+poetry run python3 src/queries/tfidf_query.py \
+  --query "historial crediticio en México" \
+  --data_dir "data/processed_chunks/anexo" \
+  --top_k 5
+```
+
+- --query: The text you want to search for among the chunked documents.
+- --data_dir: Path to the folder containing your processed .txt chunks.
+- --top_k: Number of top documents to retrieve for your query.
+
+## Data Flow
+
+1. **PDF to Raw Text**: Place your PDFs in `data/raw` and run the data preparation script.
+2. **Cleaning / Chunking**: The data preparation script can clean, split, and place .txt chunks in `data/processed_chunks`.
+3. **Retrieval**: Use the unified query script `query_cli.py` to retrieve top results with either TF-IDF or BM25.
+4. **(Optional) Generation**: You could feed the retrieved results into a language model to build a final RAG pipeline.
+
+## Data folder structure
+
+- `data/raw/` : Original PDFs
+- `data/extracted/` : Text extracted directly from PDFs
+- `data/processed/` : Cleaned text
+- `data/processed_chunks/` : Chunked text files
+
+## Future steps
+
+- Compare speed or quality between TF-IDF and BM25 using an evaluation framework (e.g., custom metrics, timing analysis).
+- Integrate an LLM to generate final answers from the retrieved documents.
+- Extend to multi-turn conversation or advanced re-ranking.
+
+## License
+
+GNU
+
+---

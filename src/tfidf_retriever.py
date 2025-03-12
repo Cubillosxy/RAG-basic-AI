@@ -14,10 +14,10 @@ class TfidfRetriever:
         :param documents: List of raw text documents.
         """
         self.documents = documents
-        self.vectorizer = TfidfVectorizer()
+        self.vectorizer = TfidfVectorizer(stop_words=None, min_df=1)
         self.doc_vectors = self.vectorizer.fit_transform(self.documents)
 
-    def retrieve(self, query: str, top_k: int = 3) -> list[tuple[str, float]]:
+    def retrieve(self, query: str, top_k: int = 6) -> list[tuple[str, float]]:
         """
         Retrieves the top-k documents most similar to the given query.
         
@@ -27,11 +27,7 @@ class TfidfRetriever:
         """
         # Transform query into the same TF-IDF space
         query_vector = self.vectorizer.transform([query])
-        
-        # Compute cosine similarities between the query and all documents
         similarities = linear_kernel(query_vector, self.doc_vectors).flatten()
-        
-        # Sort by similarity (descending) and take top_k results
         top_indices = similarities.argsort()[-top_k:][::-1]
         
         results = []
