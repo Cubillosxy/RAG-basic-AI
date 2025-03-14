@@ -13,6 +13,5 @@ def load_chunks(directory: str) -> list[str]:
     for path in file_paths:
         with open(path, 'r', encoding='utf-8') as f:
             text = f.read().strip()
-            print(f"DEBUG: Loaded {len(text)} chars from {path}")
             docs.append(text)
     return docs

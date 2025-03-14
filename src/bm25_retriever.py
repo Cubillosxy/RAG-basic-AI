@@ -25,13 +25,15 @@ class BM25Retriever:
         :param top_k: Number of documents to retrieve.
         :return: A list of tuples (document_text, bm25_score).
         """
+        if not query.strip():
+            return []
+
         # Tokenize the query
         query_tokens = query.split(" ")
         
         # BM25 returns a list of relevance scores for each document
         scores = self.bm25.get_scores(query_tokens)
-        
-        # Sort indices by score descending
+
         top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
         
         results = []
