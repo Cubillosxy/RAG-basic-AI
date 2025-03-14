@@ -52,6 +52,8 @@ class DenseRetriever:
         :param top_k: Number of documents to retrieve.
         :return: A list of (document_text, similarity_score).
         """
+        if not query.strip():
+            return []
         # 1) Encode the query
         query_vec = self.model.encode([query])
         # 2) Normalize for IP-based similarity

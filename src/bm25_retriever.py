@@ -25,6 +25,9 @@ class BM25Retriever:
         :param top_k: Number of documents to retrieve.
         :return: A list of tuples (document_text, bm25_score).
         """
+        if not query.strip():
+            return []
+
         # Tokenize the query
         query_tokens = query.split(" ")
         
